@@ -1,0 +1,187 @@
+{% extends 'dashboard/base.html' %}
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+
+    <div class="row m-t-30">
+        <div class="col-md-12">
+            <h3 class="title-5 m-b-35">Forms Table</h3>
+            <div class="table-data__tool">
+                <div class="table-data__tool-left">
+                    <div class="rs-select2--light rs-select2--md">
+                        <select class="js-select2" name="property">
+                            <option selected="selected">All Properties</option>
+                            <option value="">Option 1</option>
+                            <option value="">Option 2</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div>
+                    {% comment %} <div class="rs-select2--light rs-select2--sm">
+                        <select class="js-select2" name="time">
+                            <option selected="selected">Today</option>
+                            <option value="">3 Days</option>
+                            <option value="">1 Week</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div> {% endcomment %}
+                    {% comment %} <button class="au-btn-filter">
+                        <i class="zmdi zmdi-filter-list"></i>filters</button> {% endcomment %}
+                </div>
+                <div class="table-data__tool-right">
+                    <button  type="button" data-toggle="modal" data-target="#mediumModal" class="au-btn au-btn-icon au-btn--green au-btn--small">
+                        <i class="zmdi zmdi-plus" ></i>add form</button>
+                    <div class="rs-select2--dark rs-select2--sm rs-select2--dark2">
+                        <select class="js-select2" name="type">
+                            <option selected="selected">Export</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- DATA TABLE-->
+            <div class="table-responsive m-b-40">
+                <table class="table table-borderless table-data3">
+                    <thead>
+                        <tr>
+                            <th>form id</th>
+                            <th>form</th>
+                            <th>date</th>
+                            <th>current receiver</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for user_form in user_forms %}
+                        <tr class='clickable-row {% if user_form.et == "urgent" %} bg-danger {% endif %}' data-toggle="modal" onClick="" data-target="#{{user_form.id}}" style="cursor:pointer">
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %}"> {{user_form.id}} </td>
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %}">{{ user_form.sample.title }} </td>
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %}">{{ user_form.date }} </td>
+                            <td class="{% if user_form.et == "urgent" %} text-white {% endif %} process">{% if  user_form.status == 'sm'%} <span class="badge badge-success">Submitted</span> 
+                                {% elif user_form.status == 'dc'%}<span class="badge badge-danger">Declined</span>
+                                {% elif user_form.status == 'edit'%}<span class="badge badge-warning">Must Be Edited</span>                                
+                                {% else %}{{ user_form.current_transition.receivers_role }} {% endif %} </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- END DATA TABLE-->
+        </div>
+    </div>  
+{% endblock content %}
+
+
+
+{% block modal %}
+<!-- modal medium -->
+    <div class="modal fade" id="mediumModal" tabindex="-1" role="dialog" aria-labelledby="mediumModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 class="modal-title" id="mediumModalLabel">Select your desired modal</h3>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {% for sample in form_samples %}
+                        <button onclick="location.href='{{ sample.title }}';" type="button" class="btn btn-outline-primary btn-lg btn-block">{{ sample.title }}</button>
+                    {% endfor %}
+                </div>
+                {% comment %} <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Confirm</button>
+                </div> {% endcomment %}
+            </div>
+        </div>
+    </div>
+<!-- end modal medium -->
+{% for user_form in user_forms %}
+<div class="modal fade"  id="{{user_form.id}}" tabindex="-1" role="dialog" aria-labelledby="{{user_form.id}}" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style='max-width:1000px;' role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ user_form.sample.title }}  </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+                <div class="modal-body px-5">
+                    {% if user_form.status == 'edit' %}
+                        <form action="{% url "form-update" form_id=user_form.id %}" method="post" >
+                            {% for key , value in user_form.fields.items %}
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label class=" form-control-label">{{ key }}</label>
+                                    </div>
+                                    <div class="col col-md-5">
+                                        <input class="form-control" name='{{key}}' type='text' value='{{ value.0 }}'>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            {% csrf_token %}
+                            <button class="btn btn-primary" type='submit'>Edit</button>
+                        </form>
+                        <hr>
+                    {% endif %}
+                    {% for transition in user_form.all_transitions.all %}
+                        <div class="card 
+                        {% if transition.status == "ac"%} bg-success text-light
+                        {% elif transition.status == "sb"%} bg-warning 
+                        {% elif transition.status == "edit"%} bg-warning 
+                        {% elif transition.status == "dc"%} bg-danger text-light
+                        {% endif %}
+                        ">
+                            <div class="card-header">
+                                <strong class="card-title">{{ transition.receivers_role }}
+                                    {% if transition.receivers_role == user_form.current_transition.receivers_role %}
+                                    <small>
+                                        <span class="badge badge-info mt-1">Current State</span>
+                                    </small>
+                                    {% endif %}
+                                </strong>
+                            </div>
+                            
+                            <div class="card-body">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label for="text-input" class=" form-control-label">Comment:</label>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        {{ transition.comment }}
+                                    </div>
+                                </div>
+                                <p class="card-text">Sign:
+                                    <img src="{{transition.sign}}" id='canvas_{{ transition.id }}'>
+                                </p>
+                            </div>
+                        </div>
+                        {% comment %} <hr> {% endcomment %}
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                </div>
+            
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+
+{% endblock modal %}
+ 
+
+
+
+{% block script %}
+<script>
+    {% comment %} let url = "data:image/png;base64,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";
+
+    canvas.clear();
+    canvas.loadFromJSON(json_string,canvas.renderAll.bind(canvas));
+    $('#canvas_513').attr("src",url); {% endcomment %}
+
+    
+</script>
+{% endblock script %}

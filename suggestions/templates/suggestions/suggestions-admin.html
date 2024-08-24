@@ -1,0 +1,83 @@
+{% extends 'dashboard/base.html' %}
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+{% comment %} {% for item in data %} {% endcomment %}
+<div class="row">
+    {% for item in data %}
+    
+        <div class="col-sm-6 col-lg-3">
+        {% comment %} <button data-toggle="modal" data-target='#show_{{item.id}}'> {% endcomment %}
+            <div data-toggle="modal" data-target='#show_{{item.id}}' class="overview-item overview-item--c2">
+                <div class="overview__inner">
+                    <div class="overview-box clearfix">
+                        <div class="icon">
+                        {% if item.isSeen %}
+                        <i class= "fa fa-eye"></i>
+                        {% else %}
+                        <i class= "fa fa-eye-slash"></i>
+                        {% endif %}
+                        </div>
+                        <div class="text">
+                            <h2>{{item.title}}</h2>
+                            <span>{{item.user}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+        {% comment %} </button> {% endcomment %}
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}
+{% block modal %}
+{% for item in data %}
+<div class="modal fade" id="show_{{item.id}}" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="monthly_taskLabel">Show Suggestion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="form-group col col-md-7">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label for="text-input" class=" form-control-label">User</label>
+                                    </div>
+                                    
+                                    <div class="col-12 col-md-4">
+                                        <input required value={{item.user}} type="text" id="form_title" name="text-input" placeholder="title" class="form-control" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                <div class="form-group col col-md-7">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label for="text-input" class=" form-control-label">Title</label>
+                                    </div>
+                                    
+                                    <div class="col-12 col-md-4">
+                                        <input required value={{item.title}} type="text" id="form_title" name="text-input" placeholder="title" class="form-control" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col col-md-7">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label for="textarea-input" class=" form-control-label">Description</label>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <textarea name="textarea-input" id="form_desc" style="height:90px" id="textarea-input" rows="9" placeholder="Description..." class="form-control" disabled>{{item.description}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock modal %}

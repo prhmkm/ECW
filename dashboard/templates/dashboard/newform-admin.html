@@ -1,0 +1,315 @@
+{% extends 'dashboard/base.html' %}
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+<div class="col-sm-">
+    <div class="card">
+        <div class="card-header">
+            Forms Admin
+        </div>
+        
+        {% if messages %}
+            {% for message in messages%}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+        <div class="card-body card-block">
+            <div class="card-title">
+                <h3 class="title-2">Custom Form Details</h3>
+                <br>
+            </div>
+            <form id="customform" action="" method="post" class="">
+                <span id="errormessages"></span>
+                <div class="form-group col col-md-7">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="text-input" class=" form-control-label">Form Title</label>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <input type="text" id="form_title" name="text-input" placeholder="title" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col col-md-7">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="textarea-input" class=" form-control-label">Description</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <textarea name="textarea-input" id="form_desc" style="height:90px" id="textarea-input" rows="9" placeholder="Description..." class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+            <hr>
+            <div class="card-title">
+                <h3 class="title-2">Add a new field to your Custom Form</h3>
+                <br>
+            </div>
+            <form id="add_field" class="">
+                <div class="form-group col col-md-5">
+                    <div class="input-group">
+                        <div class="input-group-addon">Field Title</div>
+                        <input type="text" id="field_title" name="field_title" class="form-control">
+                    </div>
+                </div>
+                <div class="form-group col col-md-5">
+                    <div class="input-group">
+                        <div class="input-group-addon">Field Type</div>
+                        {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                        <select  onchange="extraDetailsField()" name="field_type" id="field_type" class="form-control">
+                            <option value="" selected disabled hidden>Choose an option</option>
+                            <option value="number">Number</option>
+                            <option value="char_field">Char Field (Small Text)</option>
+                            <option value="text_area" >Text Area (Large Text)</option>
+                            <option value="attachment" >Attachment (File)</option>
+                            <option value="check_box" >Check Box</option>
+                            <option value="radio" >Radio</option>
+                            <option value="date" >Date</option>
+                        </select>
+                    </div>
+                </div>
+                <span id='extra_fields'>
+                </span>
+                <div class="form-group col col-lg-3">
+                    <div class="input-group">
+                        <div class="input-group-addon">Required</div>
+                        <input id="is_required" type="checkbox" id="" name="" class="form-control">
+                    </div>
+                </div>
+                <div class="form-actions form-group col col-md-5">
+                    <button onclick="addField()" class="btn btn-primary btn-sm">Add</button>
+                </div>
+            </form>
+
+            <br>
+            <div class="table-responsive m-b-40">
+                <table class="table table-borderless table-data3" >
+                    <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>type</th>
+                            <th>required</th>
+                            <th>extra details</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="fields_table">
+                        {% comment %} <tr>
+                            <td>Name</td>
+                            <td>Computer</td>
+                            <td>Macbook Pro Retina 2017</td>
+                            <td>Sept. 12, 2023, 7:56 a.m.</td>
+                            <td><button class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button></td>
+                        </tr> {% endcomment %}
+                    </tbody>
+                </table>
+            </div>
+
+            <hr>
+
+            <div class="card-title">
+                <h3 class="title-2">Add Transition Points to your Form</h3>
+                <br>
+            </div>
+                <div class="row">
+                    <div class="form-group col col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">Role</div>
+                            {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                            <select name="role" id="role" class="form-control">
+                                {% for role in roles %}
+                                    <option value="{{role}}">{{role}}</option>
+                                {% endfor %}
+                            </select>
+                            <button onclick="addRole()" class="btn btn-primary btn-sm">Add</button>
+                        </div>
+                    </div>
+                    <div class="form-group col col-md-4">
+                        <div class="input-group">
+                            <div class="input-group-addon">User</div>
+                            {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                            <select name="user" id="user" class="form-control">
+                                {% for auser in users %}
+                                    <option value="{{auser.id}}">{{auser.first_name}} {{auser.last_name}}</option>
+                                {% endfor %}
+                            </select>
+                            <button onclick="addUser()" class="btn btn-primary btn-sm">Add</button>
+                        </div>
+                    </div>
+                </div>
+            
+            {% comment %} <div class= "col col-md-5">
+                <button onclick="addRole()" class="btn btn-primary btn-sm">Add</button>
+            </div> {% endcomment %}
+            <br>
+            <div id='rolesandusers' class="form-actions form-group col col-md-12">
+                
+            </div>
+            <hr>
+            <div>
+                <div class="card-title">
+                    <h3 class="title-2">Choose a color for your form</h3>
+                    <br>
+                </div>
+                <div class="row form-group">
+                    <div class="col col-md-3">
+                        <label for="text-input" class=" form-control-label">Form Color</label>
+                    </div>
+                    <div class="col-12 col-md-1">
+                        <input type="color" width='10px' id="form_color" name="text-input" placeholder="title" class="">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            {% comment %} <button type="submit" class="btn btn-info btn-sm">
+                <i class="fa fa-dot-circle-o"></i> Back
+            </button> {% endcomment %}
+            <button id="submit_butt" class="btn btn-primary btn-sm">
+                <i class="fa fa-dot-circle-o"></i> Submit
+            </button>
+            <button type="reset" class="btn btn-danger btn-sm">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block script %}
+<script>
+    let fields = []
+    $("#add_field").submit(function(e) {
+        e.preventDefault();
+    });
+
+    let roles = {}
+
+
+    function addRole(){
+        $("#rolesandusers").append(`
+            <span id='${(+new Date).toString(36)}_r'>  ${$("#role").val()} <button onclick="removeRole('${(+new Date).toString(36)}_r')" class="btn btn-danger btn-sm">
+                <i class="fa fa-close"></i></button> 
+                <i width='50px' class="fa fa-arrow-right"></i> 
+            </span>
+        `)
+        roles[`${(+new Date).toString(36)}_r`] =  $("#role").val()
+        console.log(Object.values(roles))
+    }
+    function addUser(){
+        $("#rolesandusers").append(`
+            <span id='${(+new Date).toString(36)}_r'>  ${$("#user option:selected").text()} <button onclick="removeRole('${(+new Date).toString(36)}_r')" class="btn btn-danger btn-sm">
+                <i class="fa fa-close"></i></button> 
+                <i width='50px' class="fa fa-arrow-right"></i> 
+            </span>
+        `)
+        roles[`${(+new Date).toString(36)}_r`] =  $("#user").val()
+        console.log(Object.values(roles))
+    }
+
+    function removeRole(rid){
+        $(`#${rid}`).remove()
+        delete roles[rid]
+    }
+
+    function removeField(element_id){
+        $(`#${element_id}`).remove()
+        
+        fields = fields.filter(function(f){return f.field_title != element_id})
+    }
+
+    function extraDetailsField(){
+        let option = $("#field_type").val()
+        if (option == "number"){
+            $("#extra_fields").html(`
+            <div class="form-group fade-in col col-md-5">
+                <div class="input-group">
+                    <div class="input-group-addon">Extra Details</div>
+                    <select name="field_type" id="extra_details" class="form-control">
+                        <option value='currency'>Currency</option>
+                        <option value='creditcard'>Credit Card</option>
+                        <option value='bank'>Bank Account</option>
+                        <option value='nationalid'>National ID</option>
+                    </select>
+                </div>
+            </div>
+            `)
+        }
+
+        else if (option == "check_box" || option == "radio"){
+            $("#extra_fields").html(`
+            <div class="form-group fade-in col col-md-5">
+                <div class="input-group">
+                    <div  class="input-group-addon">Extra Details</div>
+                    <textarea name="field_type" id="extra_details" style="height:90px" rows="9" placeholder="Enter each option in a seperate line" class="form-control"></textarea>
+                </div>
+            </div>
+            `)
+        }
+        else{
+            $("#extra_fields").html("")
+        }
+    }
+
+    function addField(){
+        if(!$("#field_title").val() || !$("#field_type").val()) return
+        
+
+        $("#fields_table").append(`
+            <tr class="fade-in" id="${$("#field_title").val()}">
+                <td>${$("#field_title").val()}</td>
+                <td>${$("#field_type").val()}</td>
+                <td>${$("#is_required").prop("checked")}</td>
+                <td>${$("#extra_details").val()}</td>
+                <td><button onclick="removeField('${$("#field_title").val()}')" class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button></td>
+            </tr>
+        `)
+
+        fields.push({ "field_title":$("#field_title").val() , "field_type":$("#field_type").val(), "extra_details":$("#extra_details").val(),'required':$("#is_required").prop("checked") })
+
+        $("#field_title").val("")
+        $("#field_type").val("")
+
+    }
+
+
+    $('#submit_butt').click(function () {
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "forms-admin" %}',
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles)),'color':$('#form_color').val()},
+            success: function(data, textStatus) {
+                $("#customform").prepend(`
+                    <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
+                        You successfully read this important alert.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                `)
+                window.location.href = "{% url 'forms-admin' %}"
+            }
+            ,
+            error: function(e) {
+                console.log(e)
+                $("#errormessages").html(`
+                    <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
+                        One or more fields are not filled
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                `)
+            },
+        });
+    });
+
+
+</script>
+{% endblock script %}

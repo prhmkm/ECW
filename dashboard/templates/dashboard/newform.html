@@ -1,0 +1,153 @@
+
+{% extends 'dashboard/base.html' %}
+
+
+
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+<div class="col-sm-">
+    <div class="card">
+        <div class="card-header">
+            {{ form_title }}
+        </div>
+        <form enctype="multipart/form-data" id="customform" action="" method="post" class="">
+        <div class="card-body card-block">
+            <div class="card-title">
+                <h3 class="title-2">Submitter</h3>
+                <br>
+            </div>
+                <span id="errormessages"></span>
+                
+
+                {% for field in fields %}
+                    {% if field.field_type == 'number' %}
+                        <div class="form-group col col-md-7">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">{{ field.field_title }}</label>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <input type="text" id="{{ field.field_title }}" name="{{ field.field_title }}" placeholder="{{ field.extra_details }}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                    {% elif field.field_type == 'attachment' %}
+                        <div class="form-group col col-md-7">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">{{ field.field_title }}</label>
+                                </div>
+                                <div class="col col-md-7">
+                                    <input type="file" id="{{ field.field_title }}" name="{{ field.field_title }}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                    {% elif field.field_type == 'char_field' %}
+                        <div class="form-group col col-md-7">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">{{ field.field_title }}</label>
+                                </div>
+                                <div class="col-12 col-md-4">
+                                    <input type="text" id="{{ field.field_title }}" name="{{ field.field_title }}" placeholder="{{ field.extra_details }}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+
+                    {% elif field.field_type == 'text_area' %}
+                        <div class="form-group col col-md-7">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="textarea-input" class=" form-control-label">{{ field.field_title }}</label>
+                                </div>
+                                <div class="col-12 col-md-9">
+                                    <textarea name="{{ field.field_title }}" id="{{ field.field_title }}" style="height:90px" id="textarea-input" rows="9" placeholder="{{ field.extra_details }}" class="form-control"></textarea>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% elif field.field_type == 'radio'%}
+                        <div class="form-group col col-md-7">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label class=" form-control-label">{{field.field_title}}</label>
+                                </div>
+                                <div class="col col-md-9">
+                                    <div class="form-check">
+                                        {% for option in field.extra_details %}
+                                            <div class="radio">
+                                                <label for="{{ option }}" class="form-check-label ">
+                                                    <input type="radio" id="{{ option }}" name="{{field.field_title}}" value="{{ option }}" class="form-check-input">{{ option }}
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+
+                    {% elif field.field_type == 'checkbox'%}
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label class=" form-control-label">{{field.field_title}}</label>
+                        </div>
+                        <div class="col col-md-9">
+                            <div class="form-check">
+                                {% for option in field.extra_details %}
+                                    <div class="checkbox">
+                                        <label for="{{ option }}" class="form-check-label ">
+                                            <input type="checkbox" id="{{ option }}" name="{{ option }}" value="{{ option }}" class="form-check-input">{{ option }}
+                                        </label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    {% elif field.field_type == 'date' %}
+                        <div class="form-group col col-md-7">
+                            <div class="row form-group">
+                                <div class="col col-md-3">
+                                    <label for="text-input" class=" form-control-label">{{ field.field_title }}</label>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <input type="date" id="{{ field.field_title }}" name="{{ field.field_title }}" placeholder="{{ field.extra_details }}" class="form-control">
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <br>
+                {% endfor %}
+                
+
+                
+
+
+
+        </div>
+        <div class="card-footer">
+            {% comment %} <button type="submit" class="btn btn-info btn-sm">
+                <i class="fa fa-dot-circle-o"></i> Back
+            </button> {% endcomment %}
+            <button id="submit_butt" type="submit" class="btn btn-primary btn-sm">
+                <i class="fa fa-dot-circle-o"></i> Submit
+            </button>
+            <button type="reset" class="btn btn-danger btn-sm">
+                Cancel
+            </button>
+        </div>
+        {% csrf_token %}
+        </form>
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+{% endblock script %}

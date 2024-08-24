@@ -1,0 +1,102 @@
+{% extends 'dashboard/base.html' %}
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+<div class="col-sm-">
+    <div class="card">
+        <div class="card-header">
+            Your Suggestions
+        </div>
+        
+        {% if messages %}
+            {% for message in messages%}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+        <div class="card-body card-block">
+            <div class="card-title">
+                <h3 class="title-2">MATN</h3>
+                <br>
+            </div>
+            <form id="customform" action="" method="post" class="">
+                <span id="errormessages"></span>
+                <div class="form-group col col-md-7">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="text-input" class=" form-control-label">Form Title</label>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <input type="text" id="form_title" name="text-input" placeholder="title" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group col col-md-7">
+                    <div class="row form-group">
+                        <div class="col col-md-3">
+                            <label for="textarea-input" class=" form-control-label">Description</label>
+                        </div>
+                        <div class="col-12 col-md-9">
+                            <textarea name="textarea-input" id="form_desc" style="height:90px" id="textarea-input" rows="9" placeholder="Description..." class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="card-footer">
+            {% comment %} <button type="submit" class="btn btn-info btn-sm">
+                <i class="fa fa-dot-circle-o"></i> Back
+            </button> {% endcomment %}
+            <button id="submit_butt" class="btn btn-primary btn-sm">
+                <i class="fa fa-dot-circle-o"></i> Submit
+            </button>
+            <button type="reset" onclick="window.location.href='{% url 'dashboard' %}'" class="btn btn-danger btn-sm">
+                Cancel
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+
+{% block script %}
+<script>
+
+    
+
+    $('#submit_butt').click(function () {
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "add-suggestions" %}',
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}',"title":$("#form_title").val() , "description":$("#form_desc").val(),},
+            success: function(data, textStatus) {
+                $("#customform").prepend(`
+                    <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
+                        You successfully read this important alert.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                `)
+                window.location.href = "{% url 'dashboard' %}"
+            }
+            ,
+            error: function(e) {
+                console.log(e)
+                $("#errormessages").html(`
+                    <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
+                        One or more fields are not filled
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                `)
+            },
+        });
+    });
+
+
+</script>
+{% endblock script %}

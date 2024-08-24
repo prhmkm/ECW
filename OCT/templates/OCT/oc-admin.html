@@ -1,0 +1,704 @@
+{% extends 'dashboard/base.html' %}
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+{% comment %} <div class="row">
+    <div class="col-md-12">
+        <div class="overview-wrap">
+            <h2 class="title-1">overview</h2>
+        </div>
+    </div>
+</div> {% endcomment %}
+{% comment %} <div class="row m-t-25">
+    <div class="col-sm-6 col-lg-3">
+        <div class="overview-item overview-item--c1">
+            <div class="overview__inner">
+                <div class="overview-box clearfix">
+                    <div class="icon">
+                        <i class="zmdi zmdi-account-o"></i>
+                    </div>
+                    <div class="text">
+                        <h2>10368</h2>
+                        <span>members online</span>
+                    </div>
+                </div>
+                <div class="overview-chart">
+                    <canvas id="widgetChart1"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="overview-item overview-item--c2">
+            <div class="overview__inner">
+                <div class="overview-box clearfix">
+                    <div class="icon">
+                        <i class="zmdi zmdi-shopping-cart"></i>
+                    </div>
+                    <div class="text">
+                        <h2>388,688</h2>
+                        <span>items solid</span>
+                    </div>
+                </div>
+                <div class="overview-chart">
+                    <canvas id="widgetChart2"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="overview-item overview-item--c3">
+            <div class="overview__inner">
+                <div class="overview-box clearfix">
+                    <div class="icon">
+                        <i class="zmdi zmdi-calendar-note"></i>
+                    </div>
+                    <div class="text">
+                        <h2>1,086</h2>
+                        <span>this week</span>
+                    </div>
+                </div>
+                <div class="overview-chart">
+                    <canvas id="widgetChart3"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-lg-3">
+        <div class="overview-item overview-item--c4">
+            <div class="overview__inner">
+                <div class="overview-box clearfix">
+                    <div class="icon">
+                        <i class="zmdi zmdi-money"></i>
+                    </div>
+                    <div class="text">
+                        <h2>$1,060,386</h2>
+                        <span>total earnings</span>
+                    </div>
+                </div>
+                <div class="overview-chart">
+                    <canvas id="widgetChart4"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+{% comment %} </br>
+<div class="row">
+    <div class="col-lg-6">
+        <div class="au-card recent-report">
+            <div class="au-card-inner">
+                <h3 class="title-2">recent reports</h3>
+                <div class="chart-info">
+                    <div class="chart-info__left">
+                        <div class="chart-note">
+                            <span class="dot dot--blue"></span>
+                            <span>products</span>
+                        </div>
+                        <div class="chart-note mr-0">
+                            <span class="dot dot--green"></span>
+                            <span>services</span>
+                        </div>
+                    </div>
+                    <div class="chart-info__right">
+                        <div class="chart-statis">
+                            <span class="index incre">
+                                <i class="zmdi zmdi-long-arrow-up"></i>25%</span>
+                            <span class="label">products</span>
+                        </div>
+                        <div class="chart-statis mr-0">
+                            <span class="index decre">
+                                <i class="zmdi zmdi-long-arrow-down"></i>10%</span>
+                            <span class="label">services</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="recent-report__chart">
+                    <canvas id="recent-rep-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="au-card chart-percent-card">
+            <div class="au-card-inner">
+                <h3 class="title-2 tm-b-5">char by %</h3>
+                <div class="row no-gutters">
+                    <div class="col-xl-6">
+                        <div class="chart-note-wrap">
+                            <div class="chart-note mr-0 d-block">
+                                <span class="dot dot--blue"></span>
+                                <span>products</span>
+                            </div>
+                            <div class="chart-note mr-0 d-block">
+                                <span class="dot dot--red"></span>
+                                <span>services</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-6">
+                        <div class="percent-chart">
+                            <canvas id="percent-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> {% endcomment %}
+
+<div class="row">
+    <div class="col-lg-12">
+        <!-- USER DATA-->
+        <div class="user-data m-b-30">
+            <h3 class="title-3 m-b-30">
+                <i class="zmdi zmdi-account-calendar"></i>user data</h3>
+            <div class="table-responsive table-data">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <td>name</td>
+                            <td>role</td>
+                            <td>last login</td>
+                            <td>today activity</td>
+                            <td>progress</td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for auser in users%}
+                            <tr class='clickable-row' data-toggle="modal" onClick="getWeek('{{auser.id}}',0);getMonthlyGoals('{{auser.id}}');handleDates('{{auser.id}}','{% now "Y-m-d"%}')" data-target="#{{auser.id}}" style="cursor:pointer">
+                                <td>
+                                    <div class="table-data__info">
+                                        <h6>{{ auser.first_name }} {{ auser.last_name }}</h6>
+                                        <span>
+                                            <a href="#">{{ auser.email }}</a>
+                                        </span>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="role user">user</span>
+                                </td>
+                                <td>
+                                    {{ auser.last_login }}
+                                </td>
+                                <td>
+                                     {% if auser.import_task %}  <i class="fa fa-check fa-2x text-success"></i> {% else %}  <i class="fa fa-times fa-2x text-danger"></i> {% endif %}
+                                </td>
+                                <td>
+                                    <div class="col-md-5">
+                                        <div class="percent-chart">
+                                            <canvas size='sm' width='200' dailytasksDone='{{ auser.daily_tasks.done }}' dailytasksNotDone='{{ auser.daily_tasks.notdone }}' class="percent-charts"></canvas>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </button>
+                        {{ daily_tasks.done }}
+                        {% endfor %}
+                        {% comment %} <tr>
+                            <td>
+                                <div class="table-data__info">
+                                    <h6>lori lynch</h6>
+                                    <span>
+                                        <a href="#">johndoe@gmail.com</a>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="role admin">admin</span>
+                            </td>
+                            <td>
+                                <div class="rs-select2--trans rs-select2--sm">
+                                    <select class="js-select2" name="property">
+                                        <option selected="selected">Full Control</option>
+                                        <option value="">Post</option>
+                                        <option value="">Watch</option>
+                                    </select>
+                                    <div class="dropDownSelect2"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="more">
+                                    <i class="zmdi zmdi-more"></i>
+                                </span>
+                            </td>
+                        </tr>
+                        
+                        <tr>
+                            <td>
+                                <div class="table-data__info">
+                                    <h6>lori lynch</h6>
+                                    <span>
+                                        <a href="#">johndoe@gmail.com</a>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="role member">member</span>
+                            </td>
+                            <td>
+                                <div class="rs-select2--trans rs-select2--sm">
+                                    <select class="js-select2" name="property">
+                                        <option selected="selected">Full Control</option>
+                                        <option value="">Post</option>
+                                        <option value="">Watch</option>
+                                    </select>
+                                    <div class="dropDownSelect2"></div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="more">
+                                    <i class="zmdi zmdi-more"></i>
+                                </span>
+                            </td>
+                        </tr> {% endcomment %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- END USER DATA-->
+    </div>
+
+{% endblock content %}
+
+{% block modal %}
+{% for auser in users %}
+    <div class="modal fade"  id="{{auser.id}}" tabindex="-1" role="dialog" aria-labelledby="{{auser.id}}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style='max-width:1300px;' role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="{{auser.id}}">{{ auser.first_name }} {{ auser.last_name }} </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                    <div class="modal-body px-5">
+                        <div class="card-title">
+                            <h3 class="title-2">Daily Tasks</h3>
+                            <div class="table-data__tool">
+                                <div class="table-data__tool-left">
+                                    
+                                </div>
+                                <div class="table-data__tool-right">
+                                    <button  data-dismiss="modal" type="button" data-toggle="modal" data-target="#export{{auser.id}}" class="au-btn au-btn-icon au-btn--green au-btn--small">
+                                        <i class="fa fa-table"></i> Export</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="custom-tab">
+                                    <nav>
+                                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                            <a class="nav-item nav-link {% if today|date:"w" == "1"  %} active {% endif %}" id="Monday-tab" data-toggle="tab" href="#{{auser.id}}wMonday" role="tab" aria-controls="custom-nav-contact"
+                                                aria-selected="false">Monday {% if today|date:"w" == "1"  %}<span class="badge badge-success badge{{auser.id}}">Today </span>{% endif %} <br><span class='{{auser.id}}wMonday'></span> </a>
+
+                                            <a class="nav-item nav-link {% if today|date:"w" == "2"  %} active {% endif %}" id="Tuesday-tab" data-toggle="tab" href="#{{auser.id}}wTuesday" role="tab" aria-controls="custom-nav-contact"
+                                                aria-selected="false">Tuesday {% if today|date:"w" == "2"  %}<span class="badge badge-success badge{{auser.id}}">Today</span> {% endif %} <br><span class='{{auser.id}}wTuesday'></span></a>
+
+                                            <a class="nav-item nav-link {% if today|date:"w" == "3"  %} active {% endif %}" id="Wednesday-tab" data-toggle="tab" href="#{{auser.id}}wWednesday" role="tab" aria-controls="custom-nav-contact"
+                                                aria-selected="false">Wednesday {% if today|date:"w" == "3"  %}<span class="badge badge-success badge{{auser.id}}">Today</span> {% endif %} <br><span class='{{auser.id}}wWednesday'></span></a>
+                                            
+                                            <a class="nav-item nav-link {% if today|date:"w" == "4"  %} active {% endif %}" id="Thursday-tab" data-toggle="tab" href="#{{auser.id}}wThursday" role="tab" aria-controls="custom-nav-contact"
+                                                aria-selected="false">Thursday {% if today|date:"w" == "4"  %}<span class="badge badge-success badge{{auser.id}}">Today</span> {% endif %} <br><span class='{{auser.id}}wThursday'></span></a>
+                                                
+                                            <a class="nav-item nav-link {% if today|date:"w" == "5"  %} active {% endif %}" id="Friday-tab" data-toggle="tab" href="#{{auser.id}}wFriday" role="tab" aria-controls="custom-nav-contact"
+                                                aria-selected="false">Friday {% if today|date:"w" == "5"  %}<span class="badge badge-success badge{{auser.id}}">Today</span> {% endif %} <br><span class='{{auser.id}}wFriday'></span></a>
+                                            
+                                            <a class="nav-item nav-link {% if today|date:"w" == "6"  %} active {% endif %}" id="Saturday-tab" data-toggle="tab" href="#{{auser.id}}wSaturday" role="tab" aria-controls="custom-nav-home"
+                                                aria-selected="true">Saturday {% if today|date:"w" == "6"  %}<span class="badge badge-success badge{{auser.id}}">Today</span> {% endif %} <br><span class='{{auser.id}}wSaturday'></span></a>
+
+                                            <a class="nav-item nav-link {% if today|date:"w" == "0"  %} active {% endif %}" id="Sunday-tab" data-toggle="tab" href="#{{auser.id}}wSunday" role="tab" aria-controls="custom-nav-profile"
+                                                aria-selected="false">Sunday {% if today|date:"w" == "0"  %}<span class="badge badge-success badge{{auser.id}}">Today</span> {% endif %} <br><span class='{{auser.id}}wSunday'></span></a>
+                                        </div>
+                                    </nav>
+                                    <div class="tab-content pl-3 pt-2" id="nav-tabContent">
+                                        <div class="tab-pane fade {% if today|date:"w" == "1"  %} show active {% endif %} " id="{{auser.id}}wMonday" role="tabpanel" aria-labelledby="">
+                                        </div>
+                                        <div class="tab-pane fade {% if today|date:"w" == "2"  %} show active {% endif %}" id="{{auser.id}}wTuesday" role="tabpanel" aria-labelledby="">
+                                        </div>
+                                        <div class="tab-pane fade {% if today|date:"w" == "3"  %} show active {% endif %} " id="{{auser.id}}wWednesday" role="tabpanel" aria-labelledby="">
+                                        </div>
+                                        <div class="tab-pane fade {% if today|date:"w" == "4"  %} show active {% endif %}" id="{{auser.id}}wThursday" role="tabpanel" aria-labelledby="">
+                                        </div>
+                                        <div class="tab-pane fade {% if today|date:"w" == "5"  %} show active {% endif %}" id="{{auser.id}}wFriday" role="tabpanel" aria-labelledby="">
+                                        </div>
+                                        <div class="tab-pane fade {% if today|date:"w" == "6"  %} show active {% endif %}" id="{{auser.id}}wSaturday" role="tabpanel" aria-labelledby="">
+                                        </div>
+                                        <div class="tab-pane fade {% if today|date:"w" == "0"  %} show active {% endif %}" id="{{auser.id}}wSunday" role="tabpanel" aria-labelledby="">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 d-flex justify-content-center">
+                            <button userid='{{auser.id}}' week="-1" class="btn btn-primary btn-sm pre-week">
+                                <i class="fa fa-arrow-left"></i> Previous Week</button>
+                                &nbsp;
+                            <button userid='{{auser.id}}' week='1' class="btn btn-primary btn-sm nxt-week" disabled>
+                                    Next Week <i class="fa fa-arrow-right"></i></button>
+                        </div>
+                        <hr>
+                        <div class="card-title">
+                            <h3 class="title-2">Monthly Goals</h3>
+                        </div>
+                        <span id="m{{auser.id}}">
+                        </span>
+                    </div>
+                    <div class="modal-footer">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade"  id="export{{auser.id}}" tabindex="-2" role="dialog" aria-labelledby="export{{auser.id}}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" style='max-width:900px;' role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Export </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                    <div class="modal-body px-5">
+                        <div class="card-title">
+                            <h3 class="title-2">Export {{auser.first_name}} {{auser.last_name}} Tasks To CSV</h3>
+                            <br>
+                        </div>
+                        
+                        <div class="row form-group">
+
+                            <div class="col col-md-3">
+                                <label for="text-input" class=" form-control-label">Type</label>
+                            </div>
+                            <div class="col col-md-3">
+                                <select required  id="{{auser.id}}type" class="form-control">
+                                    <option value='daily'>Daily</option>
+                                    <option value='monthly'>Monthly</option>
+                                    <option value='wh'>Working Hours</option>
+                                <select>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+
+                            <div class="col col-md-3">
+                                <label for="text-input" class=" form-control-label">Start Date</label>
+                            </div>
+                            <div class="col col-md-3">
+                                <input required type="date" id="{{auser.id}}start" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-input" class=" form-control-label">End Date</label>
+                            </div>
+                            <div class="col col-md-3">
+                                <input required type="date" id="{{auser.id}}end" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="export btn btn-primary " user='{{auser.id}}'> Export </button>
+                    </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+
+
+<div class="modal fade" id="admincomment" tabindex="-1" role="dialog" aria-labelledby="admincomment"  aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="daily_taskLabel">Admin Comment</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="get" enctype="multipart/form-data" class="form-horizontal">
+                <input type="hidden" name="csrfmiddlewaretoken" value="UziavpZUhvvAfBF1rqjjMFLCWMRPEqM9zD5q2tPIlE1MDIT8LE4hxRHt9pH59pa1"> 
+                <div class="modal-body px-5">
+                        
+                        <input type="hidden" hidden name='tid' id='tid' value="">
+                        <input type="hidden" hidden name='uid' id='uid' value="">
+                        <input type="hidden" hidden name='type' id='type' value="">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-input" class=" form-control-label">Add Comment</label>
+                            </div>
+                            <div class="col-12 col-md-9">
+                                <input required type="text" id="acomment" name="admincomment" placeholder="" class="form-control">
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" data-dismiss="modal" onClick="commentTask()">Confirm</button>
+                </div>
+            
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock modal%}
+
+{% block script %}
+<script>
+let week_days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday' ]
+let week_days_numeral = [0, 1, 2, 3, 4, 5, 6]
+
+
+
+$(document).on('click','.export',function(){
+    let user = $(this).attr('user') 
+    let type = $(`#${user}type`).val()
+    let startdate = $(`#${user}start`).val()
+    let enddate = $(`#${user}end`).val()
+    console.log(user)
+    
+    window.location.href = `{% url "export" %}?start=${startdate}&end=${enddate}&user=${user}&type=${type}`
+    
+});
+
+function handleDates(uid,first_day){
+    let today = new Date(first_day);
+    console.log(today.toLocaleString("en-CA", {timeZone: "Asia/Tehran"}).slice(0,10))
+
+    let weekday = week_days[today.getDay()]
+    
+    for (const day of week_days_numeral){
+        let current_day = new Date(today.getTime() + (day - today.getDay() + 1) * 24 * 60 * 60 * 1000)
+
+        //current_day.setDate(today.getDate() + (day - today.getDay() + 1))
+        
+
+        var formatted_date = current_day.toLocaleString("en-CA", {timeZone: "Asia/Tehran"}).slice(0,10)
+        $(`.${uid}w${week_days[current_day.getDay()]}`).html(formatted_date)
+
+    }
+
+}
+
+$(document).on('click','.pre-week',function(){
+    if ($(this).attr('week') != 1){
+        $(this).siblings('button').removeAttr('disabled')
+        $(`.badge${$(this).attr('userid')}`).hide(100)
+        console.log(`.badge${$(this).attr('userid')}`)
+    }
+
+    getWeek($(this).attr('userid') , $(this).attr('week'))
+    let current_day = new Date()
+    current_day.setDate(current_day.getDate() + 7*parseInt($(this).attr('week')))
+    handleDates($(this).attr('userid'),current_day)
+
+    $(this).attr('week',$(this).attr('week')-1)
+    $(this).siblings('button').attr('week', $(this).siblings('button').attr('week')-1)
+    
+});
+
+$(document).on('click','.nxt-week',function(){
+    if ($(this).attr('week') == 0){
+        $(this).attr('disabled','disabled')
+        $(`.badge${$(this).attr('userid')}`).show(100)
+    }
+
+    getWeek($(this).attr('userid') , $(this).attr('week'))
+    let current_day = new Date()
+    current_day.setDate(current_day.getDate() + 7*parseInt($(this).attr('week')))
+    handleDates($(this).attr('userid'),current_day)
+
+    $(this).attr('week',$(this).attr('week') - (-1))
+    $(this).siblings('button').attr('week', $(this).siblings('button').attr('week')- (-1))
+    
+});
+
+function getWeek(user_id,week){
+    $.ajax({
+        url: "{% url 'get-dailytasks' %}",
+        type: 'GET',
+        data: "uid="+user_id+"&week="+week,
+        dataType: 'json', // added data type
+        success: function(res) {
+            
+            console.log(res)
+            for (const [day, tasks] of Object.entries(res)) {
+                if (tasks.length == 0){
+                    $(`#${user_id}w${day}`).html("No Task Found !")
+                    continue
+                }
+                final_html = `
+                <div class="table-responsive table-responsive-data2">
+                    <table class="table table-data2">
+                        <thead>
+                            <tr>
+                                <th>topic</th>
+                                <th>estimated time</th>
+                                <th>actual time</th>
+                                <th>status</th>
+                                <th>related goal</th>
+                                <th>created at</th>
+                                <th>closed at</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `
+                for(const task of tasks){
+                    final_html += `
+                    <tr class="tr-shadow">
+                        <td>${ task.topic }</td>
+                        <td>${ task.estimated_time }</td>
+                        <td>${ task.actual_time ? task.actual_time: "Not Done Yet" }</td>
+                        <td>
+                            <span class="role bg-info">${ task.status }</span>
+                        </td>
+                        <td>
+                            <span class="text-primary">${ task.goal }</span>
+                        </td>
+                        <td>${ task.ca_time }</td>
+                        <td>${ task.closed_date } | ${ task.closed_time }</td>
+                        <td>
+                            <div class="table-data-feature">
+                                <button class="item bg-success check-task" data-toggle="modal" onClick='checkTask("${ task.id }")' title="Check Task" data-toggle="tooltip" data-placement="top" title="Delete Task"  ${ task.checked_by_admin ? 'hidden':''} > 
+                                    <i class="zmdi zmdi-check text-white"></i>
+                                </button>
+                                <button class="item bg-primary" data-toggle="modal" onClick='commentSetup("${user_id}","${ task.id }","${ task.admin_comment }","daily")' data-target="#admincomment" class="item" data-placement="top" title="Add Comment">
+                                    <i class="zmdi zmdi-comment text-white" ></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="spacer"></tr>
+                    `
+                }
+                final_html += `</tbody>
+                </table>
+                </div>`
+
+                $(`#${user_id}w${day}`).html(final_html)
+            }
+        }
+    });
+}
+
+function getMonthlyGoals(user_id){
+    $.ajax({
+        url: "{% url 'get-monthlygoals' %}",
+        type: 'GET',
+        data: "uid="+user_id+"&week=0",
+        dataType: 'json', // added data type
+        success: function(res) {
+            console.log(res)
+            for (const [day, tasks] of Object.entries(res)) {
+                if (tasks.length == 0){
+                    $(`#${user_id}w${day}`).html("No Task Found !")
+                    continue
+                }
+                final_html = `
+                <div class="table-responsive table-responsive-data2">
+                    <table class="table table-data2">
+                        <thead>
+                            <tr>
+                                <th>goal</th>
+                                <th>progress</th>
+                                <th>description</th>
+                                <th>created date</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `
+                for(const task of tasks){
+                    final_html += `
+                    <tr class="tr-shadow">
+                        <td>${task.goal}</td>
+                        <td class="text-info">
+                            ${task.progress_percentage}
+                        </td>
+                        <td >${task.description}</td>
+
+                        <td >${task.created_at.slice(0,10)}</td>
+
+                        <td>
+                            <div class="table-data-feature">
+                                <button class="item bg-success check-task" data-toggle="modal" onClick='checkMTask("${ task.id }")' title="Check Task" data-toggle="tooltip" data-placement="top" title="Delete Task"  ${ task.checked_by_admin ? 'hidden':''} > 
+                                    <i class="zmdi zmdi-check text-white"></i>
+                                </button>
+                                <button class="item bg-primary" data-toggle="modal" onClick='commentSetup("${user_id},${ task.id }","${ task.admin_comment }","monthly")' data-target="#admincomment" class="item" data-placement="top" title="Add Comment">
+                                    <i class="zmdi zmdi-comment text-white" ></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="spacer"></tr>
+                    `
+                }
+                final_html += `</tbody>
+                </table>
+                </div>`
+
+                $(`#m${user_id}`).html(final_html)
+            }
+        }
+    });
+}
+
+function commentSetup(uid, tid, comment,type){
+    console.log(tid, comment,type)
+    $("#type").val(type)
+    $("#tid").val(tid)
+    $("#uid").val(uid)
+    if(comment != "null"){
+        $("#acomment").val(comment)
+    }else{
+        $("#acomment").val("")
+    }
+}
+
+function commentTask(){
+    $.ajax({
+        url: "{% url 'commenttask' %}",
+        type: 'GET',
+        data: "tid="+$("#tid").val() +'&cmt='+ $("#acomment").val() + "&type=" +  $("#type").val()+ '&uid=' + $("#uid").val(),
+        dataType: 'json', // added data type
+        success: function(res) {
+            console.log(res)
+            $("#tid").val("")
+            $("#acomment").val("")
+        }
+    });
+}
+
+function checkTask(tid){
+    $.ajax({
+        url: "{% url 'checktask' %}",
+        type: 'GET',
+        data: "tid="+tid+'&daily=1',
+        dataType: 'json', // added data type
+        success: function(res) {
+            console.log(res)
+        }
+    });
+}
+
+function checkMTask(tid){
+    $.ajax({
+        url: "{% url 'checktask' %}",
+        type: 'GET',
+        data: "tid="+tid+'&monthly=1',
+        dataType: 'json', // added data type
+        success: function(res) {
+            console.log(res)
+        }
+    });
+}
+
+$(document).on('click','.check-task',function(){
+
+    $(this).hide(100)
+
+});
+</script>
+{% endblock script %}

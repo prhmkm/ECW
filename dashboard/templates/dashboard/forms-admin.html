@@ -1,0 +1,526 @@
+{% extends 'dashboard/base.html' %}
+
+{% block link %}
+{% endblock link %}
+
+{% block content %}
+
+    <div class="row">
+        <div class="col-md-12">
+            <!-- DATA TABLE -->
+            <h3 class="title-5 m-b-35">Forms Table</h3>
+            <div class="table-data__tool">
+                <div class="table-data__tool-left">
+                    <div class="rs-select2--light rs-select2--md">
+                        <select class="js-select2" name="property">
+                            <option selected="selected">All Properties</option>
+                            <option value="">Option 1</option>
+                            <option value="">Option 2</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div>
+                    {% comment %} <div class="rs-select2--light rs-select2--sm">
+                        <select class="js-select2" name="time">
+                            <option selected="selected">Today</option>
+                            <option value="">3 Days</option>
+                            <option value="">1 Week</option>
+                        </select>
+                        <div class="dropDownSelect2"></div>
+                    </div> {% endcomment %}
+                    {% comment %} <button class="au-btn-filter">
+                        <i class="zmdi zmdi-filter-list"></i>filters</button> {% endcomment %}
+                </div>
+                <div class="table-data__tool-right">
+                    <button onclick="location.href='{% url "newform" %}';" class="au-btn au-btn-icon au-btn--green au-btn--small">
+                        <i class="zmdi zmdi-plus" ></i>add form</button>
+                    
+                </div>
+            </div>
+            <div class="table-responsive table-responsive-data2">
+                <table class="table table-data2">
+                    <thead>
+                        <tr>
+                            <th>title</th>
+                            <th>description</th>
+                            <th>forms created</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for formsample in  formsamples   %}
+                            <tr class="spacer"></tr>
+                            <tr class="tr-shadow">
+                                <td>{{formsample.title}}</td>
+                                <td>{{formsample.description}}</td>
+                                <td> 0</td>
+                                <td>
+                                    <div class="table-data-feature">
+                                        <button class="item" data-toggle="modal" data-target='#edit_{{formsample.id}}' data-placement="top" title="Edit" onclick="pushToField('{{formsample.fields_str}}','{{formsample.transitions_str}}','{{formsample.id}}','{{formsample.transitions_user}}')">
+                                            <i class="zmdi zmdi-edit"></i>
+                                        </button>
+
+                                        <button class="item" data-toggle="modal" data-target='#delete_{{formsample.id}}' data-placement="top" title="Delete">
+                                             <i class="zmdi zmdi-delete"></i>
+                                        </button>
+
+                                        <button class="item" data-toggle="tooltip" data-placement="top" title="More">
+                                            <i class="zmdi zmdi-more"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!-- END DATA TABLE -->
+        </div>
+    </div>
+{% endblock content %}
+
+{% block modal %}
+
+{% for formsample in formsamples %}
+<div class="modal fade" id="delete_{{formsample.id}}" tabindex="-1" role="dialog" aria-labelledby="monthly_taskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="monthly_taskLabel">Delete Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{% url 'forms-admin-update' %}" method="get" enctype="multipart/form-data" class="form-horizontal">
+                {% csrf_token %} 
+                <div class="modal-body px-5">
+                        <input type="hidden" hidden name='pk' value="{{ formsample.id }}">
+                        <div class="row form-group">
+                            <div class="col col-md-3">
+                                <label for="text-input" class=" form-control-label">Are you sure you want to delete this task?</label>
+                            </div>
+                        </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button value="Delete" type="submit" class="btn btn-primary">Confirm</button>
+                </div>
+            
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% for formsample in formsamples %}
+<div class="modal fade" id="edit_{{formsample.id}}" tabindex="-1" role="dialog" aria-labelledby="monthly_taskLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="monthly_taskLabel">Edit Form</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="col-sm-">
+                <div class="card">
+                    <div class="card-header">
+                        Forms Admin
+                    </div>
+                    
+                    {% if messages %}
+                        {% for message in messages%}
+                            {{ message }}
+                        {% endfor %}
+                    {% endif %}
+                    <div class="card-body card-block">
+                        <div class="card-title">
+                            <h3 class="title-2">Custom Form Details</h3>
+                            <br>
+                        </div>
+                        <form id="customform" action="" method="post" class="">
+                            <span id="errormessages"></span>
+                            <div class="form-group col col-md-7">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label for="text-input" class=" form-control-label">Form Title</label>
+                                    </div>
+                                    
+                                    <div class="col-12 col-md-4">
+                                        <input required value='{{ formsample.title }}' type="text" id="form_title" name="text-input" placeholder="title" class="form-control">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col col-md-7">
+                                <div class="row form-group">
+                                    <div class="col col-md-3">
+                                        <label for="textarea-input" class=" form-control-label">Description</label>
+                                    </div>
+                                    <div class="col-12 col-md-9">
+                                        <textarea name="textarea-input" id="form_desc" style="height:90px" id="textarea-input" rows="9" placeholder="Description..." class="form-control">{{formsample.description}}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+
+            
+                        <hr>
+                        <div class="card-title">
+                            <h3 class="title-2">Add a new field to your Custom Form</h3>
+                            <br>
+                        </div>
+                        <form id="add_field" class="">
+                            <div class="form-group col col-md-5">
+                                <div class="input-group">
+                                    <div class="input-group-addon">Field Title</div>
+                                    <input type="text" id="field_title" name="field_title" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-group col col-md-5">
+                                <div class="input-group">
+                                    <div class="input-group-addon">Field Type</div>
+                                    {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                                    <select  onchange="extraDetailsField()" name="field_type" id="field_type" class="form-control">
+                                        <option value="" selected disabled hidden>Choose an option</option>
+                                        <option value="number">Number</option>
+                                        <option value="char_field">Char Field (Small Text)</option>
+                                        <option value="text_area" >Text Area (Large Text)</option>
+                                        <option value="attachment" >Attachment (File)</option>
+                                        <option value="check_box" >Check Box</option>
+                                        <option value="radio" >Radio</option>
+                                        <option value="date" >Date</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <span id='extra_fields'>
+                            </span>
+                            <div class="form-group col col-lg-3">
+                                <div class="input-group">
+                                    <div class="input-group-addon">Required</div>
+                                    <input id="is_required" type="checkbox" id="" name="" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-actions form-group col col-md-5">
+                                <button onclick="addField()" class="btn btn-primary btn-sm">Add</button>
+                            </div>
+                        </form>
+            
+                        <br>
+                        <div class="table-responsive m-b-40">
+                            <table class="table table-borderless table-data3" >
+                                <thead>
+                                    <tr>
+                                        <th>title</th>
+                                        <th>type</th>
+                                        <th>required</th>
+                                        <th>extra details</th>
+                                        <th>Remove</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fields_table" >
+                                    {% for field in formsample.fields %}
+                                    <tr class="fade-in" id="{{formsample.id}}{{field.field_title}}">
+                                        <td>{{field.field_title}}</td>
+                                        <td>{{field.field_type}}</td>
+                                        <td>{{field.required}}</td>
+                                        <td>{{field.extra_details}}</td>
+                                        <td><button onclick="removeField('{{formsample.id}}','{{field.field_title}}')" class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button></td>
+                                    </tr>
+                                    {% endfor %}
+                                    {% comment %} <tr>
+                                        <td>Name</td>
+                                        <td>Computer</td>
+                                        <td>Macbook Pro Retina 2017</td>
+                                        <td>Sept. 12, 2023, 7:56 a.m.</td>
+                                        <td><button class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button></td>
+                                    </tr> {% endcomment %}
+                                </tbody>
+                            </table>
+                        </div>
+            
+                        <hr>
+            
+                        <div class="card-title">
+                            <h3 class="title-2">Add Transition Points to your Form</h3>
+                            <br>
+                        </div>
+
+                            <div class="row">
+                                <div class="form-group col col-md-4">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">Role</div>
+                                        {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                                        <select name="role" id="{{formsample.id}}role" class="form-control">
+                                            {% for role in roles %}
+                                                <option value="{{role}}">{{role}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button onclick="addRole(null,{{formsample.id}})" class="btn btn-primary btn-sm">Add</button>
+                                    </div>
+                                </div>
+                                <div class="form-group col col-md-4">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">User</div>
+                                        {% comment %} <input type="eail" id="email3" name="email3" class="form-control"> {% endcomment %}
+                                        <select name="user" id="{{formsample.id}}user" class="form-control">
+                                            {% for user in users %}
+                                                <option value="{{user.id}}">{{user.first_name}} {{user.last_name}}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <button onclick="addUser(null,{{formsample.id}},null)" class="btn btn-primary btn-sm">Add</button>
+                                </div>
+                            </div> 
+                            </div>
+{% comment %}                         
+                        <div class= "col col-md-5">
+                            <button onclick="addRole(null,{{formsample.id}})" class="btn btn-primary btn-sm">Add</button>
+                        </div> {% endcomment %}
+                        <br>
+                        <div id= "{{formsample.id}}roles" roles="" class="form-actions form-group col col-md-12">
+                            <!-- {% for field in formsample.transitions %}
+                            <span id= "{{field}}"> {{field}} <button onclick="removeRole('{{field}}')" class="btn btn-danger btn-sm">
+                                <i class="fa fa-close"></i></button> 
+                                <i width='50px' class="fa fa-arrow-right"></i> 
+                            </span>
+                            {% endfor%} -->
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        {% comment %} <button type="submit" class="btn btn-info btn-sm">
+                            <i class="fa fa-dot-circle-o"></i> Back
+                        </button> {% endcomment %}
+                        <button id="submit_butt" class="btn btn-primary btn-sm" onclick="editform({{formsample.id}})">
+                            <i class="fa fa-dot-circle-o"></i> Submit
+                        </button>
+                        <button type="reset" class="btn btn-danger btn-sm">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}
+
+
+
+{% block script %}
+<script>
+
+    let roles = {}
+    let fields = []
+    function onlyContainsNumbers (str){ 
+        return /^\d+$/.test(str);
+        }
+
+    function pushToField(data1 ,data2,id,data3){
+        $(`#${id}roles`).html('')
+        data1 = JSON.parse(data1)
+        data2 = JSON.parse(data2)
+        data3 = JSON.parse(data3)
+
+        for (const item of data1){
+            fields.push({ "field_title": item.field_title , "field_type": item.field_type, "extra_details": item.extra_details,'required': item.required })
+        } 
+        let index = 0;
+        for (const role of data3){
+
+            // roles[`${(+new Date).toString(36)}_r`] = item
+            if( onlyContainsNumbers(role)){
+               addUser(data2[index],id,role)
+            }else{
+                addRole(role ,id)
+            }
+
+            index ++
+        }
+
+    }
+    
+    
+    $("#add_field").submit(function(e) {
+        e.preventDefault();
+    });
+
+
+    $('.modal').on('hide.bs.modal', function (e) {
+        roles = {}
+        fields = []
+    })
+    function addRole(role,id){
+        let random_id = Date.now() + Math.random()
+        if (role){
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${role} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  role
+        }else{
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${$(`#${id}role`).val()} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  $(`#${id}role`).val()
+
+        }
+    }
+    function addUser(title,id,role){
+        debugger;
+        let random_id = Date.now() + Math.random()
+        if (role){
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${title} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  role
+        }else{
+            $(`#${id}roles`).append(`
+                <span id='${random_id}_r'>  ${$(`#${id}user option:selected`).text()} <button onclick="removeRole('${random_id}_r')" class="btn btn-danger btn-sm">                <i class="fa fa-close"></i></button> 
+                    <i width='50px' class="fa fa-arrow-right"></i> 
+                </span>
+            `)
+            roles[`${random_id}_r`] =  $(`#${id}user`).val()
+
+        }
+    }
+    function removeRole(rid){
+
+        $(document.getElementById(rid)).remove()
+        delete roles[rid]
+    }
+
+    function removeField(element_id,title){
+        $(`#${element_id+title}`).remove()
+        
+        fields = fields.filter(function(f){return f.field_title != title})
+    }
+
+    function extraDetailsField(){
+        let option = $("#field_type").val()
+        if (option == "number"){
+            $("#extra_fields").html(`
+            <div class="form-group fade-in col col-md-5">
+                <div class="input-group">
+                    <div class="input-group-addon">Extra Details</div>
+                    <select name="field_type" id="extra_details" class="form-control">
+                        <option value='currency'>Currency</option>
+                        <option value='creditcard'>Credit Card</option>
+                        <option value='bank'>Bank Account</option>
+                        <option value='nationalid'>National ID</option>
+                    </select>
+                </div>
+            </div>
+            `)
+        }
+
+        else if (option == "check_box" || option == "radio"){
+            $("#extra_fields").html(`
+            <div class="form-group fade-in col col-md-5">
+                <div class="input-group">
+                    <div  class="input-group-addon">Extra Details</div>
+                    <textarea name="field_type" id="extra_details" style="height:90px" rows="9" placeholder="Enter each option in a seperate line" class="form-control"></textarea>
+                </div>
+            </div>
+            `)
+        }
+        else{
+            $("#extra_fields").html("")
+        }
+    }
+
+    function addField(){
+        if(!$("#field_title").val() || !$("#field_type").val()) return
+        
+
+        $("#fields_table").append(`
+            <tr class="fade-in" id="${$("#field_title").val()}">
+                <td>${$("#field_title").val()}</td>
+                <td>${$("#field_type").val()}</td>
+                <td>${$("#is_required").prop("checked")}</td>
+                <td>${$("#extra_details").val()}</td>
+                <td><button onclick="removeField('${$("#field_title").val()}')" class="btn btn-danger btn-sm"><i class="fa fa-close"></i></button></td>
+            </tr>
+        `)
+
+        fields.push({ "field_title":$("#field_title").val() , "field_type":$("#field_type").val(), "extra_details":$("#extra_details").val(),'required':$("#is_required").prop("checked") })
+
+        $("#field_title").val("")
+        $("#field_type").val("")
+
+    }
+
+    function editform(id){
+       
+        
+        $.ajax({
+            type: 'POST',
+            url: '{% url "forms-admin-update" %}',
+            data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles)), 'pk' : id},
+            success: function(data, textStatus) {
+                $("#customform").prepend(`
+                    <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
+                        You successfully read this important alert.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                `)
+                window.location.href = "{% url 'forms-admin' %}"
+            }
+            ,
+            error: function(e) {
+                console.log(e)
+                $("#errormessages").html(`
+                    <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
+                        One or more fields are not filled
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                `)
+            },
+        });
+    }
+
+
+    // $('#submit_butt').click(function () {
+
+    //     $.ajax({
+    //         type: 'POST',
+    //         url: '{% url "forms-admin-update" %}',
+    //         data: {'csrfmiddlewaretoken': '{{ csrf_token }}','fields': JSON.stringify(fields),"title":$("#form_title").val() , "description":$("#form_desc").val(),'trns':  JSON.stringify(Object.values(roles)), 'pk' : '33'},
+    //         success: function(data, textStatus) {
+    //             $("#customform").prepend(`
+    //                 <div class="sufee-alert alert with-close alert-success alert-dismissible fade show">
+    //                     You successfully read this important alert.
+    //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    //                         <span aria-hidden="true">×</span>
+    //                     </button>
+    //                 </div>
+    //             `)
+    //             window.location.href = "{% url 'forms-admin' %}"
+    //         }
+    //         ,
+    //         error: function(e) {
+    //             console.log(e)
+    //             $("#errormessages").html(`
+    //                 <div class="sufee-alert alert with-close alert-danger alert-dismissible fade show">
+    //                     One or more fields are not filled
+    //                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    //                         <span aria-hidden="true">×</span>
+    //                     </button>
+    //                 </div>
+    //             `)
+    //         },
+    //     });
+    // });
+
+
+</script>
+{% endblock script %}
